@@ -17,17 +17,17 @@ class YMLBuilder {
 
     private $xml_version = "1.0";
     private $encoding    = "UTF-8";
-    private $name        = "";
-    private $company     = "";
-    private $main_url    = "";
-    private $email       = "";
-    private $date        = "";
-    private $currencies  = "";
-    private $categories  = "";
-    private $deliveries  = "";
-    private $offers      = "";
+    private $name        ;
+    private $company     ;
+    private $main_url    ;
+    private $email       ;
+    private $date        ;
+    private $currencies  ;
+    private $categories  ;
+    private $deliveries  ;
+    private $offers      ;
 
-    public $yml = "";
+    public $yml;
 
     public function __construct() {
         $this->date = date("Y-m-d H:i");

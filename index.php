@@ -4,14 +4,19 @@ define('YML_CLASS_FOLDER',__DIR__.'/ymlbuilder');
 
 include YML_CLASS_FOLDER.'/ymlbuilder.php';
 
-$currencies = '';
-$categories = '';
-$deliveries = '';
-$offers = '';
+$currencies = array();
+$categories = array();
+$deliveries = array();
+$offers     = array();
 
 $currencies = array(
     array("id"=> "UAN","rate"=> 1),
     array("id"=> "RUR","rate"=> 2)
+);
+$categories = array(
+    array("id"=> 1,"name"=> 'Category1','parent_id'=>''),
+    array("id"=> 2,"name"=> 'Category2','parent_id'=>1),
+    array("id"=> 3,"name"=> 'Category3','parent_id'=>1),    
 );
 $deliveries = array(
     array('cost' => 500,'days' => '1-2', 'order-before' => 14),
@@ -20,6 +25,8 @@ $deliveries = array(
     array('cost' => 0,'days' => '2-3', 'order-before' => '')
 );
 //iconv('utf-8', 'windows-1251','Продукция')
+$offers = array();
+
 $offers[] = array(
     'id' => 1,
     'type' => 'vendor.model',
@@ -41,7 +48,7 @@ $offers[] = array(
     'delivery' => true,
     'delivery-options' => array(),
     'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae suscipit recusandae minus maxime magnam corporis reiciendis ex. Accusantium quae sunt voluptatum. Quibusdam, accusamus neque fugit error consequatur at natus beatae?',
-    'param' => arrey(
+    'param' => array(
         array('name'=> 'Вес','unit'=> 'кг','value'=> '10'),
         array('name'=> 'Материал','unit'=> '','value'=> 'полиэстер'),
         array('name'=> 'Диаметр','unit'=> 'мм','value'=> '3'),
