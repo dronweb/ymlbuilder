@@ -13,7 +13,7 @@ class YMLBuilder {
     private $error = false;
     private $error_massive;
     private $eol = "\r\n";
-    private $header = "";
+    //private $header = "";
 
     private $xml_version = "1.0";
     private $encoding    = "UTF-8";
@@ -192,8 +192,6 @@ class YMLBuilder {
         }
         return $string;
     }
-
-
 
     private function check(){
         return true;
