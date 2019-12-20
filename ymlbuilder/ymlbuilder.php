@@ -1,11 +1,11 @@
 <?php
 /**
- * @name YMLBuilder
+ * @name YMLBuilder 2.0
  * @description Клас для создания yml-файла выгрузки для Яндекса
  * @class_uri:  Ссылка на инфо о плагине
  * @author_uri:  https://t.me/ivan_peshko/
  * @author Ivan Peshko
- * @version 1.0
+ * @version 2.0
  *
  */
 class YMLBuilder {
@@ -39,14 +39,20 @@ class YMLBuilder {
         $this->xml_version = $version;
     }
     /**
-     * @param string $encoding Кодировка
+     * @param string $encoding File encoding
      */
     public function setEncoding($encoding) {
         $this->encoding = $encoding;
     }
+    /**
+     * @param string $name Site name
+     */
     public function setName($name) {
         $this->name = $name;
     }
+    /**
+     * @param string $company Company name
+     */
     public function setCompany($company) {
         $this->company = $company;
     }
@@ -119,12 +125,34 @@ class YMLBuilder {
                 }
             }
     }
+
+    /**
+     * cTag - create html tag with data and attributes
+     * @param string $tagName Tag name
+     * @param array $attributes array of attributes
+     * @param string $data Data to put inside of tag
+     * @return string
+     * */
+    private function cTag($tagName, $attributes = array(), $data = ''){
+        $eol = $this->eol;
+        $tag  = '';
+        $attribute = '';
+        foreach ($attributes as $name => $value)
+            if ($value) $attribute .= ' '.$name.'="'.$value.'"';
+
+        if ($data) $tag .= '<'.$tagName.$attribute.'>'.$data.'</'.$tagName.'>'.$eol;
+        else $tag .= '<'.$tagName.$attribute.'/>'.$eol;
+
+        return $tag;
+    }
+
     private function buildCurrency(){
         $eol = $this->eol;
         $currencies = $this->currencies;
         $string ='';
         foreach ($currencies as $currency){
-            $string .= '<currency id="'.$currency['id'].'" rate="'.$currency['rate'].'"/>'.$eol;
+            //$string .= '<currency id="'.$currency['id'].'" rate="'.$currency['rate'].'"/>'.$eol;
+            $string .= $this->cTag('currency',array('id'=>$currency['id'],'rate'=> $currency['rate']));
         }
         return $string;
     }
@@ -134,7 +162,13 @@ class YMLBuilder {
         $string ='';
         foreach ($categories as $category){
             $parent = $category['parent_id'] != '' ? ' parentId="'.$category['parent_id'].'"' : '' ;
-            $string .= '<category id="'.$category['id'].'"'. $parent .'>'.$category['name'].'</category>'.$eol;
+            //$string .= '<category id="'.$category['id'].'"'. $parent .'>'.$category['name'].'</category>'.$eol;
+            $string .= $this->cTag('category',array(
+                'id'=>$category['id'],
+                'parentId'=> $category['parent_id']
+            ),
+                $category['name']
+            );
         }
         return $string;
     }
@@ -212,14 +246,14 @@ class YMLBuilder {
             $content .= '<?xml version="'.$this->xml_version.'" encoding="'.$this->encoding.'"?>'.$eol;
             $content .= '<yml_catalog date="'.$this->date.'">'.$eol;
             $content .= '<shop>'.$eol;
-                $content .= '<name>'.$this->name.'</name>'.$eol;
-                $content .= '<company>'.$this->company.'</company>'.$eol;
-                $content .= '<url>'.$this->main_url.'</url>'.$eol;
-                $content .= $this->email ? '<email>'.$this->email.'</email>'.$eol: '';
-                $content .= '<currencies>'.$eol.$currency.'</currencies>'.$eol;
-                $content .= '<categories>'.$eol.$categories.'</categories>'.$eol;
-                if ($deliveries) $content .= '<delivery-options>'.$eol.$deliveries.'</delivery-options>'.$eol;
-                $content .= '<offers>'.$eol.$offers.'</offers>'.$eol;
+            $content .= '<name>'.$this->name.'</name>'.$eol;
+            $content .= '<company>'.$this->company.'</company>'.$eol;
+            $content .= '<url>'.$this->main_url.'</url>'.$eol;
+            $content .= $this->email ? '<email>'.$this->email.'</email>'.$eol: '';
+            $content .= '<currencies>'.$eol.$currency.'</currencies>'.$eol;
+            $content .= '<categories>'.$eol.$categories.'</categories>'.$eol;
+            if ($deliveries) $content .= '<delivery-options>'.$eol.$deliveries.'</delivery-options>'.$eol;
+            $content .= '<offers>'.$eol.$offers.'</offers>'.$eol;
             $content .= '</shop>'.$eol;
             $content .= '</yml_catalog>';
 
