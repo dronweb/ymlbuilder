@@ -1,11 +1,11 @@
 <?php
 /**
- * @name YMLBuilder 2.0
+ * @name YMLBuilder 2.1
  * @description Клас для создания yml-файла выгрузки для Яндекса
  * @class_uri:  Ссылка на инфо о плагине
  * @author_uri:  https://t.me/ivan_peshko/
  * @author Ivan Peshko
- * @version 2.0
+ * @version 2.1
  *
  */
 class YMLBuilder {
@@ -14,7 +14,6 @@ class YMLBuilder {
     private $error_massive;
     private $eol = "\r\n";
     private $header = "";
-    //private $test;
 
     private $xml_version = "1.0";
     private $encoding    = "UTF-8";
@@ -186,11 +185,9 @@ class YMLBuilder {
     }
 
     private function buildOffers(){
-        $eol = $this->eol;
         $offers = $this->offers;
         $string ='';
         foreach ($offers as $offer){
-
             $data ='';
             $data .= $this->cTag('name','',$offer['name']);
             if ($offer['typePrefix']) $data .= $this->cTag('typePrefix','',$offer['typePrefix']);
