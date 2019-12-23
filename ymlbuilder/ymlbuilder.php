@@ -14,6 +14,7 @@ class YMLBuilder {
     private $error_massive;
     private $eol = "\r\n";
     private $header = "";
+    //private $test;
 
     private $xml_version = "1.0";
     private $encoding    = "UTF-8";
@@ -137,8 +138,9 @@ class YMLBuilder {
         $eol = $this->eol;
         $tag  = '';
         $attribute = '';
+        if ($attributes)
         foreach ($attributes as $name => $value)
-            if ($value) $attribute .= ' '.$name.'="'.$value.'"';
+            if ($value || $value == 0) $attribute .= ' '.$name.'="'.$value.'"';
 
         if ($data) $tag .= '<'.$tagName.$attribute.'>'.$data.'</'.$tagName.'>'.$eol;
         else $tag .= '<'.$tagName.$attribute.'/>'.$eol;
@@ -147,26 +149,21 @@ class YMLBuilder {
     }
 
     private function buildCurrency(){
-        $eol = $this->eol;
         $currencies = $this->currencies;
         $string ='';
-        foreach ($currencies as $currency){
-            //$string .= '<currency id="'.$currency['id'].'" rate="'.$currency['rate'].'"/>'.$eol;
+        foreach ($currencies as $currency)
             $string .= $this->cTag('currency',array('id'=>$currency['id'],'rate'=> $currency['rate']));
-        }
+
         return $string;
     }
     private function buildCategories(){
-        $eol = $this->eol;
         $categories = $this->categories;
         $string ='';
         foreach ($categories as $category){
-            $parent = $category['parent_id'] != '' ? ' parentId="'.$category['parent_id'].'"' : '' ;
-            //$string .= '<category id="'.$category['id'].'"'. $parent .'>'.$category['name'].'</category>'.$eol;
             $string .= $this->cTag('category',array(
                 'id'=>$category['id'],
                 'parentId'=> $category['parent_id']
-            ),
+                ),
                 $category['name']
             );
         }
@@ -174,13 +171,15 @@ class YMLBuilder {
     }
 
     private function buildDeliveryOptions(){
-        $eol = $this->eol;
         $deliveries = $this->deliveries;
         $del ='';
         if ($deliveries != '') {
             foreach ($deliveries as $delivery){
-                $offer = $delivery['order-before'] ? ' order-before="' . $delivery['order-before'] . '"' : '';
-                $del .= '<option cost="'.$delivery['cost'].'" days="'.$delivery['days'].'"'.$offer.'/>'.$eol;
+                $del .= $this->cTag('option',array(
+                    'cost'=>$delivery['cost'],
+                    'days'=> $delivery['days'],
+                    'order-before' => $delivery['order-before'])
+                );
             }
         }
         return $del;
@@ -191,43 +190,47 @@ class YMLBuilder {
         $offers = $this->offers;
         $string ='';
         foreach ($offers as $offer){
-            $bid = $offer['bid']!=''? ' bid="'.$$offer['bid'].'"':'';
-            $string .= '<offer id="'.$offer['id'].'"'.$bid.'>'.$eol;
-            $string .= '<name>'.$offer['name'].'</name>'.$eol;
-            if ($offer['typePrefix']) $string .= '<typePrefix>'.$offer['typePrefix'].'</typePrefix>'.$eol;
-            if ($offer['vendor']) $string .= '<vendor>'.$offer['vendor'].'</vendor>'.$eol;
-            $string .= '<url>'.$offer['url'].'</url>'.$eol;
-            $string .= '<price>'.$offer['price'].'</price>'.$eol;
-            $string .= '<currencyId>'.$offer['currencyId'].'</currencyId>'.$eol;
-            $string .= '<categoryId>'.$offer['categoryId'].'</categoryId>'.$eol;
-            foreach ($offer['picture'] as $picture_url) if ($picture_url!='') $string .= '<picture>'.$picture_url.'</picture>'.$eol;
-            !$offer['store'] ? $string .= '<store>false</store>'.$eol : $string .= '<store>true</store>'.$eol;
-            !$offer['pickup'] ? $string .= '<pickup>false</pickup>'.$eol : $string .= '<pickup>true</pickup>'.$eol;
-            !$offer['delivery'] ? $string .= '<delivery>false</delivery>'.$eol : $string .= '<delivery>true</delivery>'.$eol;
-            if ($offer['delivery'] == true && $offer['delivery-options']!= ''){
-                foreach ($offer['delivery-options'] as $options) {
-                    $ob = $options['order-before']!='' ? ' order-before="'.$options['order-before'].'"' : '';
-                    $string .= '<option cost="'.$options['cost'].'" days="'.$options['days'].'"'.$ob.'/>'.$eol;
-                }
-            }
-            if ($offer['description']) $string .= '<description>'.$offer['description'].'</description>'.$eol;
-            if ($offer['param']!='')
-                foreach ($offer['param'] as $param) {
-                    $unit = $param['unit']!=''? ' unit="'.$param['unit'].'"':'';
-                    $string .= '<param name="'.$param['name'].'"'.$unit.'>'.$param['value'].'</param>'.$eol;
-                }
-            if ($offer['sales_notes']!='') $string .= '<sales_notes>'.$offer['sales_notes'].'</sales_notes>'.$eol;
-            if ($offer['manufacturer_warranty']!='') $string .= '<manufacturer_warranty>'.$offer['manufacturer_warranty'].'</manufacturer_warranty>'.$eol;
-            if ($offer['country_of_origin']) $string .= '<country_of_origin>'.$offer['country_of_origin'].'</country_of_origin>'.$eol;
-            if ($offer['barcode']!='') $string .= '<barcode>'.$offer['currencyId'].'</barcode>'.$eol;
 
-            $string .= ' </offer>'.$eol;
+            $data ='';
+            $data .= $this->cTag('name','',$offer['name']);
+            if ($offer['typePrefix']) $data .= $this->cTag('typePrefix','',$offer['typePrefix']);
+            if ($offer['vendor']) $data .= $this->cTag('vendor','',$offer['vendor']);
+            $data .= $this->cTag('url','',$offer['url']);
+            $data .= $this->cTag('price','',$offer['price']);
+            $data .= $this->cTag('currencyId','',$offer['currencyId']);
+            $data .= $this->cTag('categoryId','',$offer['categoryId']);
+            foreach ($offer['picture'] as $picture_url) if ($picture_url!='') $data .= $this->cTag('picture','',$picture_url);
+            !$offer['store'] ? $data .= $this->cTag('store','','false') : $data .= $this->cTag('store','','true');
+            !$offer['pickup'] ? $data .= $this->cTag('pickup','','false') : $data .= $this->cTag('pickup','','true');//$string .= '<pickup>false</pickup>'.$eol : $string .= '<pickup>true</pickup>'.$eol;
+            !$offer['delivery'] ? $data .= $this->cTag('delivery','','false') : $data .= $this->cTag('delivery','','true');//$string .= '<delivery>false</delivery>'.$eol : $string .= '<delivery>true</delivery>'.$eol;
+            if ($offer['delivery'] && $offer['delivery-options'])
+                foreach ($offer['delivery-options'] as $options)
+                    $data .= $this->cTag('option',array(
+                        'cost' => $options['cost'],
+                        'days' => $options['days'],
+                        'order-before' => $options['order-before']
+                    ));
+            if ($offer['description']) $data .= $this->cTag('description','',$offer['description']);
+            if ($offer['param'])
+                foreach ($offer['param'] as $param)
+                    $data .= $this ->cTag('param',
+                        array(
+                            'name' => $param['name'],
+                            'unit' => $param['unit']
+                        ),
+                        $param['value']);
+            if ($offer['sales_notes']) $this->cTag('sales_notes','',$offer['sales_notes']);
+            if ($offer['manufacturer_warranty']) $this->cTag('manufacturer_warranty','',$offer['manufacturer_warranty']);
+            if ($offer['country_of_origin']) $this->cTag('country_of_origin','',$offer['country_of_origin']);
+            if ($offer['barcode']!='') $this->cTag('barcode','',$offer['barcode']);
 
+            $string .= $this ->cTag('offer', array(
+                'id' => $offer['id'],
+                'bid' => $offer['bid']
+            ),$data);
         }
         return $string;
     }
-
-
 
     private function check(){
         return true;

@@ -37,7 +37,7 @@ $offers[] = array(
     'url' => 'c/product/test_product/',
     'price' => 1000,
     'currencyId' => 'RUR',
-    'categoryId' => $category_id,
+    'categoryId' => 1,
     'picture' => array(
         'http://test.ua/product/test_product/1.png',
         'http://test.ua/product/test_product/2.png',
